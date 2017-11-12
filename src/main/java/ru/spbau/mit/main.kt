@@ -1,7 +1,5 @@
 package ru.spbau.mit
 
-import org.antlr.v4.runtime.ANTLRFileStream
-import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.ParseTree
 import javax.swing.JFrame
@@ -9,13 +7,13 @@ import org.antlr.v4.gui.TreeViewer
 import javax.swing.JPanel
 
 
-
-
 fun main(args: Array<String>) {
-    val lexer = FunLexer(ANTLRFileStream("src/main/examples/first.fun"))
-    val parser = FunParser(CommonTokenStream(lexer))
-    parser.buildParseTree = true
-    val tree = parser.file()
+    if (args.isEmpty()) {
+        println("Error: No file specified for parsing.")
+        return
+    }
+
+    val tree = ParseTreeBuilder.build(args[0])
 //    showTree(tree, parser)
 
     val visitor = InterpretationVisitor()

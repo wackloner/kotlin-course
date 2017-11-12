@@ -1,9 +1,5 @@
 grammar Fun;
 
-file
-    : block EOF
-    ;
-
 block
     : statement*
     ;
@@ -50,7 +46,7 @@ returnStatement
     : 'return' expression
     ;
 
-// split binaryOperation to several blocks for good precedence
+// split binaryOperation to several blocks for good precedence parsing
 expression
     : functionCall                                           #functionCallExpression
     | Identifier                                             #identifierExpression
@@ -87,7 +83,7 @@ Literal
     ;
 
 Comment
-    : '//' ~[\r\n] -> skip
+    : '//' ~[\r\n]* -> skip
     ;
 
 Space
