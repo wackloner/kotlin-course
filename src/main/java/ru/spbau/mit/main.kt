@@ -4,6 +4,8 @@ import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.ParseTree
 import javax.swing.JFrame
 import org.antlr.v4.gui.TreeViewer
+import ru.spbau.mit.interpreter.FunException
+import ru.spbau.mit.interpreter.InterpretationVisitor
 import javax.swing.JPanel
 
 
@@ -13,14 +15,16 @@ fun main(args: Array<String>) {
         return
     }
 
-    val tree = ParseTreeBuilder.build(args[0])
+    val parseTree = ParseTreeBuilder.build(args[0])
 //    showTree(tree, parser)
 
     val visitor = InterpretationVisitor()
     try {
-        visitor.visit(tree)
+        visitor.visit(parseTree)
+    } catch (exception: IllegalStateException) {
+        System.err.println("Parsing exception: " + exception.message)
     } catch (exception: FunException) {
-        print("Exception: " + exception.message)
+        System.err.println("Interpretation exception: " + exception.message)
     }
 }
 

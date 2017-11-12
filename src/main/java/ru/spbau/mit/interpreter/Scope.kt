@@ -1,7 +1,7 @@
-package ru.spbau.mit
+package ru.spbau.mit.interpreter
 
 class Scope(
-        val parentScope: Scope? = null
+        var parentScope: Scope? = null
 ) {
     private val variables: MutableMap<String, Int> = HashMap()
     private val functions: MutableMap<String, Function> = HashMap()
@@ -43,10 +43,16 @@ class Scope(
         return copy
     }
 
+    fun clear() {
+        parentScope = null
+        variables.clear()
+        functions.clear()
+    }
+
     fun debugShowVars() {
         print(variables)
         if (parentScope != null) {
-            parentScope.debugShowVars()
+            parentScope?.debugShowVars()
         } else {
             println()
         }

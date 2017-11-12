@@ -1,4 +1,7 @@
-package ru.spbau.mit
+package ru.spbau.mit.interpreter
+
+import ru.spbau.mit.FunParser
+import java.io.PrintStream
 
 class Function(
         val name: String,
@@ -10,7 +13,7 @@ class Function(
         frozenScope.defineFunction(this)
     }
 
-    fun invoke(arguments: List<Int>): Int {
+    fun invoke(arguments: List<Int>, printStream: PrintStream): Int {
         if (arguments.size != parameterNames.size)
             throw FunException("Invalid number of arguments!")
         val functionScope = Scope(frozenScope)
@@ -18,7 +21,7 @@ class Function(
             index, name -> functionScope.initializeVariable(name, arguments[index])
         }
 
-        val visitor = InterpretationVisitor(functionScope)
+        val visitor = InterpretationVisitor(printStream, functionScope)
         try {
             visitor.visit(body)
         } catch (returnValue: ReturnValue) {

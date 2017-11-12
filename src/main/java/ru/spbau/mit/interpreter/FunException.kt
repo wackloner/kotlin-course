@@ -1,4 +1,4 @@
-package ru.spbau.mit
+package ru.spbau.mit.interpreter
 
 class FunException(
         override var message: String

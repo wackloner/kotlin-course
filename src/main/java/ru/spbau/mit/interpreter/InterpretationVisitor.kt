@@ -1,7 +1,12 @@
-package ru.spbau.mit
+package ru.spbau.mit.interpreter
+
+import ru.spbau.mit.FunBaseVisitor
+import ru.spbau.mit.FunParser
+import java.io.PrintStream
 
 class InterpretationVisitor(
-        private var scope: Scope = Scope()
+        private val printStream: PrintStream = System.out,
+        var scope: Scope = Scope()
 ) : FunBaseVisitor<Int>() {
     companion object {
         val returnValue: ReturnValue = ReturnValue()
@@ -13,7 +18,7 @@ class InterpretationVisitor(
 
     override fun visitPrintlnFunctionCall(ctx: FunParser.PrintlnFunctionCallContext?): Int {
         val arguments = ctx!!.arguments().expression()
-        println(arguments.map { visit(it) }.joinToString(" "))
+        printStream.println(arguments.map { visit(it) }.joinToString(" "))
         return 0
     }
 
@@ -69,7 +74,7 @@ class InterpretationVisitor(
     override fun visitIdentifierFunctionCall(ctx: FunParser.IdentifierFunctionCallContext?): Int {
         val function = scope.getFunction(ctx!!.Identifier().text)
         val arguments = ctx.arguments().expression().map { visit(it) }
-        return function.invoke(arguments)
+        return function.invoke(arguments, printStream)
     }
 
     override fun visitAssignment(ctx: FunParser.AssignmentContext?): Int {
