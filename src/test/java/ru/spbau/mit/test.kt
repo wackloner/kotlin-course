@@ -5,7 +5,7 @@ import org.junit.Test
 class TestSource {
     @Test
     fun firstSample() {
-        val actual = Solver().solve(
+        val actual = solve(
                 2,
                 "bac",
                 arrayOf(
@@ -19,7 +19,7 @@ class TestSource {
 
     @Test
     fun secondSample() {
-        val actual = Solver().solve(
+        val actual = solve(
                 1,
                 "abacaba",
                 arrayOf(
@@ -34,7 +34,7 @@ class TestSource {
 
     @Test
     fun customTest() {
-        val actual = Solver().solve(
+        val actual = solve(
                 2000,
                 "aaaaaaaaaa",
                 Array(20000, { Request(1, 'a') })
