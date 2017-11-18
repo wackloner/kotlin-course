@@ -1,14 +1,12 @@
 package ru.spbau.mit
 
-fun getGreeting(): String {
-    val words = mutableListOf<String>()
-    words.add("Hello,")
-    
-    words.add("world!")
+import ru.spbau.mit.tex.*
 
-    return words.joinToString(separator = " ")
-}
 
 fun main(args: Array<String>) {
-    println(getGreeting())
+    val doc = document {
+        documentClass("beamer")
+        usePackage("ololo", "heh")
+    }
+    print(doc)
 }
