@@ -21,7 +21,7 @@ abstract class Element(
         if (additionalArgs == null || additionalArgs.isEmpty())
             ""
         else
-            additionalArgs.joinToString(" ,", "[", "]")
+            additionalArgs.joinToString(", ", "[", "]")
 
     fun toOutputStream(stream: OutputStream = System.out) = stream.write(toString().toByteArray())
 }
@@ -32,15 +32,9 @@ class TextElement(private val text: String) : Element() {
     }
 }
 
-class Math(private val text: String) : Element() {
-    override fun render(builder: StringBuilder, indent: String) {
-        builder.append("\$$text\$\n")
-    }
-}
-
 abstract class Tag(
         private val name: String,
-        additionalArgs: Array<out String>?
+        additionalArgs: Array<out String>? = null
 ) : Element(additionalArgs) {
     protected val children = mutableListOf<Element>()
 
@@ -59,11 +53,13 @@ abstract class Tag(
     operator fun String.unaryPlus() = children.add(TextElement(this))
 }
 
+class Math : Tag("math")
+
 abstract class TagWithItems(
         name: String,
         additionalArgs: Array<out String>?
 ) : Tag(name, additionalArgs) {
-    fun item(vararg additionalArgs: String, init: Item.() -> Unit) = initTag(Item(additionalArgs), init)
+    fun item(vararg additionalArgs: String, init: Item.() -> Unit = {}) = initTag(Item(additionalArgs), init)
 }
 
 class Itemize(additionalArgs: Array<out String>?) : TagWithItems("itemize", additionalArgs)
@@ -74,22 +70,24 @@ abstract class TagWithContent(
         name: String,
         additionalArgs: Array<out String>? = null
 ) : Tag(name, additionalArgs) {
-    fun math(text: String) = initTag(Math(text), {})
+    fun math(init: Math.() -> Unit = {}) = initTag(Math(), init)
 
-    fun itemize(vararg additionalArgs: String, init: Itemize.() -> Unit) = initTag(Itemize(additionalArgs), init)
+    fun itemize(vararg additionalArgs: String, init: Itemize.() -> Unit = {}) =
+            initTag(Itemize(additionalArgs), init)
 
-    fun enumerate(vararg additionalArgs: String, init: Enumerate.() -> Unit) = initTag(Enumerate(additionalArgs), init)
+    fun enumerate(vararg additionalArgs: String, init: Enumerate.() -> Unit = {}) =
+            initTag(Enumerate(additionalArgs), init)
 
-    fun left(init: Left.() -> Unit) = initTag(Left(), init)
+    fun left(init: Left.() -> Unit = {}) = initTag(Left(), init)
 
-    fun center(init: Center.() -> Unit) = initTag(Center(), init)
+    fun center(init: Center.() -> Unit = {}) = initTag(Center(), init)
 
-    fun right(init: Right.() -> Unit) = initTag(Right(), init)
+    fun right(init: Right.() -> Unit = {}) = initTag(Right(), init)
 
-    fun customTag(name: String, vararg additionalArgs: String, init: CustomTag.() -> Unit) =
+    fun customTag(name: String, vararg additionalArgs: String, init: CustomTag.() -> Unit = {}) =
             initTag(CustomTag(name, additionalArgs), init)
 
-    fun frame(frameTitle: String, vararg additionalArgs: String, init: Frame.() -> Unit) =
+    fun frame(frameTitle: String, vararg additionalArgs: String, init: Frame.() -> Unit = {}) =
             initTag(Frame(frameTitle, additionalArgs), init)
 }
 
@@ -111,7 +109,7 @@ class Right : Alignment("right")
 class CustomTag(
         name: String,
         additionalArgs: Array<out String>?
-) : TagWithContent(name, additionalArgs)
+) : Tag(name, additionalArgs)
 
 class Frame(
         frameTitle: String,
