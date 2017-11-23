@@ -72,7 +72,10 @@ class InterpretationVisitor(
     override fun visitIdentifierFunctionCall(ctx: FunParser.IdentifierFunctionCallContext): Int {
         val function = scope.getFunction(ctx.Identifier().text)
         val arguments = ctx.arguments().expression().map { visit(it) }
-        return function.invoke(arguments, printStream)
+        return function.invoke(arguments, printStream).let {
+            returnValue = null
+            it
+        }
     }
 
     override fun visitAssignment(ctx: FunParser.AssignmentContext): Int {
