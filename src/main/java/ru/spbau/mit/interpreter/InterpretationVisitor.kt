@@ -92,7 +92,6 @@ class InterpretationVisitor(
 
     override fun visitBlock(ctx: FunParser.BlockContext): Int {
         scope = Scope(scope)
-        println("enter block")
         for (statement in ctx.statement()) {
             if (returnValue != null) {
                 break
@@ -103,7 +102,6 @@ class InterpretationVisitor(
             }
             visit(statement)
         }
-        println("exit block")
         scope = scope.parentScope!!
         return returnValue ?: 0
     }
@@ -113,10 +111,10 @@ class InterpretationVisitor(
 
     override fun visitWhileStatement(ctx: FunParser.WhileStatementContext): Int {
         val condition = ctx.expression()
-        while (visit(condition) != 0) {
+        while (visit(condition) != 0 && returnValue == null) {
             visit(ctx.blockWithBraces())
         }
-        return 0
+        return returnValue ?: 0
     }
 
     override fun visitIfStatement(ctx: FunParser.IfStatementContext): Int = when {
