@@ -24,11 +24,8 @@ class Function(
         }
 
         val visitor = InterpretationVisitor(printStream, functionScope)
-        try {
-            visitor.visit(body)
-        } catch (returnValue: ReturnValue) {
-            return returnValue.value
-        }
-        return 0
+        val res = visitor.visit(body)
+        InterpretationVisitor.returnValue = null
+        return res
     }
 }

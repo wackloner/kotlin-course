@@ -3,15 +3,15 @@ package ru.spbau.mit.interpreter
 class Scope(
         var parentScope: Scope? = null
 ) {
-    private val variables: MutableMap<String, Int> = HashMap()
-    private val functions: MutableMap<String, Function> = HashMap()
+    private var variables: MutableMap<String, Int> = HashMap()
+    private var functions: MutableMap<String, Function> = HashMap()
 
     fun initializeVariable(name: String, value: Int = 0) {
         FunException.assert(
                 name in variables,
             "Variable with such name already exists in current scope!"
         )
-        variables += name to value
+        variables.put(name, value)
     }
 
     fun assignVariable(name: String, value: Int) {
@@ -31,7 +31,7 @@ class Scope(
                 getFunctionOrNull(function.name) != null,
                 "Such function already exists!"
         )
-        functions += function.name to function
+        functions.put(function.name, function)
     }
 
     private fun getFunctionOrNull(name: String): Function? = functions[name] ?:
@@ -41,9 +41,9 @@ class Scope(
             throw FunException("No such function exists!")
 
     fun copy(): Scope {
-        val copy = Scope(parentScope)
-        variables.toMap(copy.variables)
-        functions.toMap(copy.functions)
+        val copy = Scope(parentScope?.copy())
+        copy.variables = HashMap(variables)
+        copy.functions = HashMap(functions)
         return copy
     }
 

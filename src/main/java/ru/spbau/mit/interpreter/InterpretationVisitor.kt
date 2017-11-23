@@ -9,7 +9,7 @@ class InterpretationVisitor(
         var scope: Scope = Scope()
 ) : FunBaseVisitor<Int>() {
     companion object {
-        val returnValue: ReturnValue = ReturnValue()
+        var returnValue: Int? = null
     }
 
     override fun visitLiteralExpression(ctx: FunParser.LiteralExpressionContext) = ctx.text.toInt()
@@ -92,20 +92,20 @@ class InterpretationVisitor(
 
     override fun visitBlock(ctx: FunParser.BlockContext): Int {
         scope = Scope(scope)
-        var returned = false
+        println("enter block")
         for (statement in ctx.statement()) {
+            if (returnValue != null) {
+                break
+            }
             if (statement.returnStatement() != null) {
-                returnValue.value = visit(statement.returnStatement())
-                returned = true
+                returnValue = visit(statement.returnStatement())
                 break
             }
             visit(statement)
         }
+        println("exit block")
         scope = scope.parentScope!!
-        if (returned) {
-            throw returnValue
-        }
-        return 0
+        return returnValue ?: 0
     }
 
     override fun visitBlockWithBraces(ctx: FunParser.BlockWithBracesContext): Int =

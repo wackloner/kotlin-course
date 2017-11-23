@@ -4,20 +4,23 @@ import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.ParseTree
 import javax.swing.JFrame
 import org.antlr.v4.gui.TreeViewer
+import org.antlr.v4.runtime.ANTLRFileStream
+import org.antlr.v4.runtime.CommonTokenStream
 import ru.spbau.mit.interpreter.FunException
 import ru.spbau.mit.interpreter.InterpretationVisitor
 import javax.swing.JPanel
 
 
 fun main(args: Array<String>) {
-    if (args.isEmpty()) {
-        println("Error: No file specified for parsing.")
-        return
-    }
+//    if (args.isEmpty()) {
+//        println("Error: No file specified for parsing.")
+//        return
+//    }
 
-    val parseTree = ParseTreeBuilder.build(args[0])
-
+//    val parseTree = ParseTreeBuilder.build(args[0])
+    val parseTree = ParseTreeBuilder.build("src/test/funSources/nthprime.fun")
     val visitor = InterpretationVisitor()
+    showTree(parseTree, FunParser(CommonTokenStream(FunLexer(ANTLRFileStream("src/test/funSources/nthprime.fun")))))
     try {
         visitor.visit(parseTree)
     } catch (exception: IllegalStateException) {
