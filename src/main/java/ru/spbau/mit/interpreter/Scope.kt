@@ -7,8 +7,10 @@ class Scope(
     private val functions: MutableMap<String, Function> = HashMap()
 
     fun initializeVariable(name: String, value: Int = 0) {
-        if (name in variables)
-            throw FunException("Variable with such name already exists in current scope!")
+        FunException.assert(
+                name in variables,
+            "Variable with such name already exists in current scope!"
+        )
         variables += name to value
     }
 
@@ -25,21 +27,23 @@ class Scope(
                 parentScope?.getVariable(name) ?: throw FunException("No such variable exists!")
 
     fun defineFunction(function: Function) {
-        try {
-            getFunction(function.name)
-            throw FunException("Such function already exists!")
-        } catch (exception: FunException) {
-            functions += function.name to function
-        }
+        FunException.assert(
+                getFunctionOrNull(function.name) != null,
+                "Such function already exists!"
+        )
+        functions += function.name to function
     }
 
-    fun getFunction(name: String): Function = functions[name] ?:
-            parentScope?.getFunction(name) ?: throw FunException("No such function exists!")
+    private fun getFunctionOrNull(name: String): Function? = functions[name] ?:
+            parentScope?.getFunctionOrNull(name)
+
+    fun getFunction(name: String): Function = getFunctionOrNull(name) ?:
+            throw FunException("No such function exists!")
 
     fun copy(): Scope {
         val copy = Scope(parentScope)
-        variables.forEach { name, value -> copy.assignVariable(name, value) }
-        functions.forEach { _, function -> copy.defineFunction(function) }
+        variables.toMap(copy.variables)
+        functions.toMap(copy.functions)
         return copy
     }
 
@@ -51,10 +55,6 @@ class Scope(
 
     fun debugShowVars() {
         print(variables)
-        if (parentScope != null) {
-            parentScope?.debugShowVars()
-        } else {
-            println()
-        }
+        parentScope?.debugShowVars() ?: println()
     }
 }

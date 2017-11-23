@@ -14,8 +14,10 @@ class Function(
     }
 
     fun invoke(arguments: List<Int>, printStream: PrintStream): Int {
-        if (arguments.size != parameterNames.size)
-            throw FunException("Invalid number of arguments!")
+        FunException.assert(
+                arguments.size != parameterNames.size,
+                "Invalid number of arguments!"
+        )
         val functionScope = Scope(frozenScope)
         parameterNames.forEachIndexed {
             index, name -> functionScope.initializeVariable(name, arguments[index])

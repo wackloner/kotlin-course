@@ -16,7 +16,6 @@ fun main(args: Array<String>) {
     }
 
     val parseTree = ParseTreeBuilder.build(args[0])
-//    showTree(tree, parser)
 
     val visitor = InterpretationVisitor()
     try {
