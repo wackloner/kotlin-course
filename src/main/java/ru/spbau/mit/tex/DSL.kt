@@ -9,7 +9,7 @@ annotation class TexElementMarker
 abstract class Element(
         private val additionalArgs: Array<out String>? = null
 ) {
-    abstract fun render(builder: StringBuilder, indent: String)
+    internal abstract fun render(builder: StringBuilder, indent: String)
 
     override fun toString(): String {
         val builder = StringBuilder()
@@ -17,7 +17,7 @@ abstract class Element(
         return builder.toString()
     }
 
-    fun renderArgs(): String =
+    protected fun renderArgs(): String =
         if (additionalArgs == null || additionalArgs.isEmpty())
             ""
         else
@@ -46,7 +46,9 @@ abstract class Tag(
 
     override fun render(builder: StringBuilder, indent: String) {
         builder.append("$indent\\begin{$name}${renderArgs()}\n")
-        children.forEach { it.render(builder, indent + "  ") }
+        children.forEach {
+            it.render(builder, indent + "  ")
+        }
         builder.append("$indent\\end{$name}\n")
     }
 
@@ -86,15 +88,14 @@ abstract class TagWithContent(
 
     fun customTag(name: String, vararg additionalArgs: String, init: CustomTag.() -> Unit = {}) =
             initTag(CustomTag(name, additionalArgs), init)
-
-    fun frame(frameTitle: String, vararg additionalArgs: String, init: Frame.() -> Unit = {}) =
-            initTag(Frame(frameTitle, additionalArgs), init)
 }
 
 class Item(additionalArgs: Array<out String>?) : TagWithContent("item", additionalArgs) {
     override fun render(builder: StringBuilder, indent: String) {
         builder.append("$indent\\item${renderArgs()}\n")
-        children.forEach { it.render(builder, indent + "  ") }
+        children.forEach {
+            it.render(builder, indent + "  ")
+        }
     }
 }
 
@@ -133,7 +134,9 @@ class Document : TagWithContent("document") {
 
     override fun render(builder: StringBuilder, indent: String) {
         documentClass?.render(builder, indent) ?: throw TexException("No documentClass specified!")
-        usePackages.forEach { it.render(builder, indent)}
+        usePackages.forEach {
+            it.render(builder, indent)
+        }
         super.render(builder, indent)
     }
 
@@ -142,6 +145,9 @@ class Document : TagWithContent("document") {
     }
 
     fun usePackage(arg: String, vararg additionalArgs: String) = usePackages.add(UsePackage(arg, additionalArgs))
+
+    fun frame(frameTitle: String, vararg additionalArgs: String, init: Frame.() -> Unit = {}) =
+            initTag(Frame(frameTitle, additionalArgs), init)
 }
 
 fun document(init: Document.() -> Unit): Document {
